@@ -28,11 +28,44 @@ st.title(menu)
 
 if menu == "AI Chat":
 
-    prompt = st.text_area("Ask anything")
+    # Chat History
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
 
-    if st.button("Generate"):
-        answer = ask_ai(prompt)
-        st.write(answer)
+    # Purane messages dikhana
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    # Naya message
+    if prompt := st.chat_input("Ask me anything..."):
+
+        # User Message
+        st.session_state.messages.append(
+            {
+                "role": "user",
+                "content": prompt
+            }
+        )
+
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # AI Response
+        with st.chat_message("assistant"):
+
+            with st.spinner("🤖 Thinking..."):
+
+                answer = ask_ai(prompt)
+
+                st.markdown(answer)
+
+        st.session_state.messages.append(
+            {
+                "role": "assistant",
+                "content": answer
+            }
+        )
 
 elif menu == "Email Generator":
 
